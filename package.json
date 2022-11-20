@@ -1,0 +1,18 @@
+{
+  "name": "loan_app",
+  "version": "0.0.0",
+  "description": "COSC333 Project Group 4",
+  "main": "src",
+  "author": "Philip Edekobi <philipedekobi@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "node": "^19.1.0",
+    "prisma": "^4.6.1"
+  }
+}
