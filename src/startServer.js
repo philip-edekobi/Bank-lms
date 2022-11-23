@@ -3,11 +3,14 @@ require("dotenv").config();
 const express = require("express");
 const http = require("http");
 const cors = require("cors");
+const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 
 const PORT = parseInt(process.env.PORT, 10);
 
 function setupRoutes(app) {
-  app.use();
+  app.use("/api/v1/user/", userRoutes);
+  app.use("/api/v1/admin/", adminRoutes);
 }
 
 module.exports.startServer = () => {

@@ -9,3 +9,55 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Customer {
+  id        Int      @id @default(autoincrement()) @map("customer_id")
+  fname     String   @db.VarChar(25)
+  lname     String   @db.VarChar(25)
+  email     String   @unique
+  acc_num   Int      @unique
+  password  String
+  phone_num String
+  address   String
+  gender    String   @db.VarChar(1)
+  dob       DateTime @db.Date()
+  loans     Loan[]
+
+  @@map("customers")
+}
+
+model Loan {
+  id         Int      @id @default(autoincrement()) @map("loan_id")
+  desc       String   @db.VarChar(255)
+  collateral String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  customerId Int
+  type       LoanType @relation(fields: [loanTypeId], references: [id])
+  loanTypeId Int      @map("loan_type_id")
+  startDate  DateTime @map("start_date") @db.Date
+  dueDate    DateTime @map("due_date") @db.Date
+  isSettled  Boolean  @default(false)
+
+  @@map("loans")
+}
+
+model Admin {
+  id       Int    @id @default(autoincrement()) @map("admin_id")
+  fname    String @db.VarChar(25)
+  lname    String @db.VarChar(25)
+  email    String @unique
+  password String
+
+  @@map("admins")
+}
+
+model LoanType {
+  id       Int     @id @default(autoincrement()) @map("loan_type_id")
+  name     String  @map("loan_name")
+  desc     String  @db.VarChar(255)
+  amount   Int
+  interest Decimal
+  loans    Loan[]
+
+  @@map("loan_types")
+}
