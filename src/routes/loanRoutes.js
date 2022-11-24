@@ -1,4 +1,6 @@
 const { Router } = require("express");
+const rateLimiter = require("express-rate-limit");
+const { validationResult, matchedData } = require("express-validator");
 
 const prisma = require("../lib/prisma");
 const { adminAuth, userAuth } = require("../middleware/authMiddleWare");
@@ -6,9 +8,14 @@ const {
   loanValidator,
   loanTypeValidator,
 } = require("../middleware/validateLoan");
-const { validationResult, matchedData } = require("express-validator");
 
 const loanRouter = Router();
+const limiter = rateLimiter({
+  windowMs: 45 * 1000,
+  max: 1,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const customerGreenData = {
   id: true,
@@ -46,13 +53,31 @@ loanRouter.get("", async (_, res) => {
   }
 });
 
-loanRouter.post("", userAuth, loanValidator, async (req, res) => {
+loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
+  if (!req.user)
+    return res.status(403).json({ success: false, error: "Access Denied" });
+
   try {
+    const { desc, collateral, customerId, loanTypeId, startDate, dueDate } =
+      req.body;
+
+    const loan = await prisma.loan.create({
+      data: {
+        desc,
+        collateral,
+        customerId: parseInt(req.user.id, 10),
+        loanTypeId,
+        startDate,
+        dueDate,
+      },
+    });
+
+    return res.status(201).json({ success: true, data: { loan } });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ success: false, error });
@@ -104,7 +129,6 @@ loanRouter.post("/type", adminAuth, loanTypeValidator, async (req, res) => {
 
     return res.status(201).json({ success: true, data: { loanType: type } });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ success: false, error });
   }
 });

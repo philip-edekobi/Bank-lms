@@ -13,11 +13,6 @@ module.exports.loanValidator = checkSchema({
     notEmpty: true,
     errorMessage: "field can not be empty",
   },
-  customerId: {
-    in: "body",
-    isNumeric: true,
-    errorMessage: "Enter a valid id for the customer",
-  },
   loanTypeId: {
     in: "body",
     isNumeric: true,
