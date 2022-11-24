@@ -60,6 +60,24 @@ userRouter.get("/details", userAuth, async (req, res) => {
   }
 });
 
+userRouter.get("/loans", userAuth, async (req, res) => {
+  try {
+    if (!req.user)
+      return res.status(403).json({ success: false, error: "Access Denied" });
+
+    const loans = await prisma.loan.findMany({
+      where: {
+        customerId: parseInt(req.user.id, 10),
+      },
+    });
+
+    return res.status(200).json({ success: true, data: { loans } });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error });
+  }
+});
+
 userRouter.post("", signupValidator, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const loanRoutes = require("./routes/loanRoutes");
 
 const PORT = parseInt(process.env.PORT, 10);
 
@@ -14,6 +15,7 @@ const PORT = parseInt(process.env.PORT, 10);
 function setupRoutes(app) {
   app.use("/api/v1/user/", userRoutes);
   app.use("/api/v1/admin/", adminRoutes);
+  app.use("/api/v1/loan", loanRoutes);
 }
 
 module.exports.startServer = () => {

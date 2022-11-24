@@ -2,8 +2,6 @@
 const { Router } = require("express");
 const jwt = require("jsonwebtoken");
 
-const { adminAuth } = require("../middleware/authMiddleWare");
-
 let adminRouter = Router();
 
 const greenData = {
