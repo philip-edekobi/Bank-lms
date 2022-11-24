@@ -198,6 +198,34 @@ userRouter.post("/login", loginValidator, async (req, res) => {
   }
 });
 
+userRouter.post("/pay", userAuth, async (req, res) => {
+  try {
+    if (!req.user)
+      return res.status(403).json({ success: false, error: "Access Denied" });
+
+    let loan = await prisma.loan.findFirst({
+      where: {
+        customerId: parseInt(req.user.id, 10),
+        isSettled: false,
+      },
+    });
+
+    const updatedLoan = await prisma.loan.update({
+      where: {
+        id: parseInt(loan.id, 10),
+      },
+      data: {
+        isSettled: true,
+      },
+    });
+
+    return res.status(200).json({ success: true, data: { loan: updatedLoan } });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, error });
+  }
+});
+
 userRouter.patch("", userAuth, updateValidator, async (req, res) => {
   req.body = matchedData(req, { locations: ["body"], includeOptionals: true });
   const errors = validationResult(req);

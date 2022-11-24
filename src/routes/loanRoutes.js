@@ -53,7 +53,7 @@ loanRouter.get("", async (_, res) => {
   }
 });
 
-loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
+loanRouter.post("", /*limiter,*/ userAuth, loanValidator, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -63,8 +63,19 @@ loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
     return res.status(403).json({ success: false, error: "Access Denied" });
 
   try {
-    const { desc, collateral, customerId, loanTypeId, startDate, dueDate } =
-      req.body;
+    const { desc, collateral, loanTypeId, startDate, dueDate } = req.body;
+
+    const existingLoan = await prisma.loan.findMany({
+      where: {
+        customerId: parseInt(req.user.id, 10),
+        isSettled: false,
+      },
+    });
+
+    if (existingLoan.length > 0)
+      return res
+        .status(409)
+        .json({ success: false, error: "User already owes a loan" });
 
     const loan = await prisma.loan.create({
       data: {
