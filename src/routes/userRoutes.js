@@ -1,40 +1,61 @@
 "use strict";
 const { Router } = require("express");
-const { validationResult } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const { generateAccountNumber } = require("../helpers");
-const authMiddleware = require("../middleware/authMiddleWare");
+const { userAuth } = require("../middleware/authMiddleWare");
 const {
   signupValidator,
   loginValidator,
+  updateValidator,
+  updatePasswordValidator,
 } = require("../middleware/validateUser");
 const prisma = require("../lib/prisma");
 
 require("dotenv").config();
 
+const greenData = {
+  id: true,
+  fname: true,
+  lname: true,
+  acc_num: true,
+  email: true,
+  phone_num: true,
+  address: true,
+  gender: true,
+  dob: true,
+}; // allowed fields for the user from the database
+
 let userRouter = Router();
 
 userRouter.get("", async (_, res) => {
   try {
-    const users = await prisma.customer.findMany();
-    return res.status(200).json({ success: false, data: { users } });
+    const users = await prisma.customer.findMany({
+      select: greenData,
+    });
+    return res.status(200).json({ success: true, data: { users } });
   } catch (err) {
     return res.status(500).json({ error: err });
   }
 });
 
-userRouter.get(":id", async (req, res) => {
+userRouter.get("/details", userAuth, async (req, res) => {
   try {
+    if (!req.user)
+      return res.status(403).json({ success: false, error: "Access Denied" });
+
     const user = await prisma.customer.findUnique({
       where: {
-        id: req.params.id,
+        id: parseInt(req.user.id, 10),
       },
+      select: greenData,
     });
 
-    return res.status(200).json({ user });
+    return res.status(200).json({ success: true, data: { user } });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error });
   }
 });
@@ -89,7 +110,7 @@ userRouter.post("", signupValidator, async (req, res) => {
       expiresIn: process.env.JWT_EXPIRE,
     });
 
-    return res.cookie({ token: token }).json({
+    return res.cookie("token", { token }).json({
       success: true,
       message: "User registered successfully",
       data: {
@@ -107,12 +128,11 @@ userRouter.post("", signupValidator, async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ error });
   }
 });
 
-userRouter.post("login", loginValidator, async (req, res) => {
+userRouter.post("/login", loginValidator, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
@@ -125,18 +145,11 @@ userRouter.post("login", loginValidator, async (req, res) => {
     //check if user exists and compare passwords
     const customer = await prisma.customer.findUnique({
       where: {
-        acc_num: acc_num,
+        acc_num: parseInt(acc_num, 10),
       },
       select: {
-        id: true,
-        fname: true,
-        lname: true,
-        acc_num: true,
-        email: true,
-        phone_num: true,
-        address: true,
-        gender: true,
-        dob: true,
+        ...greenData,
+        password: true,
       },
     });
 
@@ -155,10 +168,10 @@ userRouter.post("login", loginValidator, async (req, res) => {
       expiresIn: process.env.JWT_EXPIRE,
     });
 
-    return res.cookie({ token: token }).json({
+    return res.cookie("token", { token }).json({
       success: true,
       message: "Login successful",
-      data: { customer: customer },
+      data: { customer: { ...customer, password: null } },
     });
 
     //return user
@@ -167,6 +180,95 @@ userRouter.post("login", loginValidator, async (req, res) => {
   }
 });
 
-userRouter.delete(":id", authMiddleware, async (req, res) => {});
+userRouter.patch("", userAuth, updateValidator, async (req, res) => {
+  req.body = matchedData(req, { locations: ["body"], includeOptionals: true });
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  if (!req.user)
+    return res.status(403).json({ success: false, error: "Access Denied" });
+
+  try {
+    const user = await prisma.customer.findUnique({
+      where: {
+        id: parseInt(req.user.id, 10),
+      },
+    });
+
+    const newUser = await prisma.customer.update({
+      where: {
+        id: parseInt(req.user.id, 10),
+      },
+      data: {
+        ...user,
+        ...req.body,
+      },
+      select: greenData,
+    });
+
+    return res.status(200).json({ success: true, data: { user: newUser } });
+  } catch (error) {
+    return res.status(500).json({ success: false, error });
+  }
+});
+
+userRouter.patch(
+  "/password",
+  userAuth,
+  updatePasswordValidator,
+  async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    if (!req.user)
+      return res.status(403).json({ success: false, error: "Access Denied" });
+
+    try {
+      const newPassword = req.body.newPassword;
+      const salt = await bcrypt.genSalt();
+      const hash = await bcrypt.hash(newPassword, salt);
+
+      const updatedUser = await prisma.customer.update({
+        where: {
+          id: parseInt(req.user.id, 10),
+        },
+        data: {
+          password: hash,
+        },
+        select: greenData,
+      });
+
+      return res
+        .status(200)
+        .json({ success: true, data: { user: { updatedUser } } });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ success: false, error });
+    }
+  }
+);
+
+userRouter.delete("", userAuth, async (req, res) => {
+  if (!req.user)
+    return res.status(403).json({ success: false, error: "Access Denied" });
+
+  try {
+    const delUser = await prisma.customer.delete({
+      where: {
+        id: req.user.id,
+      },
+
+      select: greenData,
+    });
+
+    return res.status(200).json({ success: true, customer: delUser });
+  } catch (error) {
+    return res.status(500).json({ success: false, error });
+  }
+});
 
 module.exports = userRouter;

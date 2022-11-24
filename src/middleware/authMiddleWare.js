@@ -1,7 +1,7 @@
 const prisma = require("../lib/prisma");
 const jwt = require("jsonwebtoken");
 
-module.exports = async function (req, res, next) {
+module.exports.userAuth = async function (req, res, next) {
   try {
     const { token } = req.cookies;
 
@@ -9,8 +9,12 @@ module.exports = async function (req, res, next) {
       return res.status(403).json({ error: "UNAUTHORIZED REQUEST" });
     }
 
-    const verify = jwt.verify(token, process.env.SECRET_KEY);
-    req.user = await prisma.findUnique({
+    const verify = jwt.verify(token.token, process.env.SECRET_KEY);
+
+    if (!verify)
+      return res.status(403).json({ success: false, error: "Access Denied" });
+
+    req.user = await prisma.customer.findUnique({
       where: {
         id: verify.id,
       },
@@ -21,3 +25,5 @@ module.exports = async function (req, res, next) {
     return res.status(403).json({ error: "UNAUTHORIZED REQUEST" });
   }
 };
+
+module.exports.adminAuth = async function () {};
