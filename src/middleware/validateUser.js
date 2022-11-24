@@ -1,3 +1,4 @@
+"use strict";
 const { checkSchema } = require("express-validator");
 
 // validation middleware are exported here

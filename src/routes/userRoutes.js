@@ -246,7 +246,6 @@ userRouter.patch(
         .status(200)
         .json({ success: true, data: { user: { updatedUser } } });
     } catch (error) {
-      console.log(error);
       return res.status(500).json({ success: false, error });
     }
   }

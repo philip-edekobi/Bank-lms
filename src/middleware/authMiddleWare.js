@@ -1,3 +1,4 @@
+"use strict";
 const prisma = require("../lib/prisma");
 const jwt = require("jsonwebtoken");
 
