@@ -53,7 +53,7 @@ model Admin {
 
 model LoanType {
   id       Int     @id @default(autoincrement()) @map("loan_type_id")
-  name     String  @map("loan_name")
+  name     String  @unique @map("loan_name")
   desc     String  @db.VarChar(255)
   amount   Int
   interest Decimal

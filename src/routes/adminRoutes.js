@@ -40,7 +40,7 @@ adminRouter.post("/login", async (req, res) => {
       expiresIn: process.env.JWT_EXPIRE,
     });
 
-    return res.cookie("token", { token }).json({
+    return res.cookie("adminToken", { token }).json({
       success: true,
       message: "Login successful",
       data: { admin: { ...admin, password: null } },
