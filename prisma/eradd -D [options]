@@ -1,0 +1,403 @@
+USERADD(8)                                    System Management Commands                                    USERADD(8)
+
+NNAAMMEE
+       useradd - create a new user or update default new user information
+
+SSYYNNOOPPSSIISS
+       uusseerraadddd [_o_p_t_i_o_n_s] _L_O_G_I_N
+
+       uusseerraadddd -D
+
+       uusseerraadddd -D [_o_p_t_i_o_n_s]
+
+DDEESSCCRRIIPPTTIIOONN
+       uusseerraadddd is a low level utility for adding users. On Debian, administrators should usually use aadddduusseerr(8)
+       instead.
+
+       When invoked without the --DD option, the uusseerraadddd command creates a new user account using the values specified
+       on the command line plus the default values from the system. Depending on command line options, the uusseerraadddd
+       command will update system files and may also create the new user's home directory and copy initial files.
+
+       By default, a group will also be created for the new user (see --gg, --NN, --UU, and UUSSEERRGGRROOUUPPSS__EENNAABB).
+
+OOPPTTIIOONNSS
+       The options which apply to the uusseerraadddd command are:
+
+       ----bbaaddnnaammee
+           Allow names that do not conform to standards.
+
+       --bb, ----bbaassee--ddiirr _B_A_S_E___D_I_R
+           The default base directory for the system if --dd _H_O_M_E___D_I_R is not specified.  _B_A_S_E___D_I_R is concatenated with
+           the account name to define the home directory. If the --mm option is not used, _B_A_S_E___D_I_R must exist.
+
+           If this option is not specified, uusseerraadddd will use the base directory specified by the HHOOMMEE variable in
+           /etc/default/useradd, or /home by default.
+
+       --cc, ----ccoommmmeenntt _C_O_M_M_E_N_T
+           Any text string. It is generally a short description of the login, and is currently used as the field for
+           the user's full name.
+
+       --dd, ----hhoommee--ddiirr _H_O_M_E___D_I_R
+           The new user will be created using _H_O_M_E___D_I_R as the value for the user's login directory. The default is to
+           append the _L_O_G_I_N name to _B_A_S_E___D_I_R and use that as the login directory name. The directory _H_O_M_E___D_I_R does not
+           have to exist but will not be created if it is missing.
+
+       --DD, ----ddeeffaauullttss
+           See below, the subsection "Changing the default values".
+
+       --ee, ----eexxppiirreeddaattee _E_X_P_I_R_E___D_A_T_E
+           The date on which the user account will be disabled. The date is specified in the format _Y_Y_Y_Y_-_M_M_-_D_D.
+
+           If not specified, uusseerraadddd will use the default expiry date specified by the EEXXPPIIRREE variable in
+           /etc/default/useradd, or an empty string (no expiry) by default.
+
+       --ff, ----iinnaaccttiivvee _I_N_A_C_T_I_V_E
+           The number of days after a password expires until the account is permanently disabled. A value of 0
+           disables the account as soon as the password has expired, and a value of -1 disables the feature.
+
+           If not specified, uusseerraadddd will use the default inactivity period specified by the IINNAACCTTIIVVEE variable in
+           /etc/default/useradd, or -1 by default.
+
+       --gg, ----ggiidd _G_R_O_U_P
+           The group name or number of the user's initial login group. The group name must exist. A group number must
+           refer to an already existing group.
+
+           If not specified, the behavior of uusseerraadddd will depend on the UUSSEERRGGRROOUUPPSS__EENNAABB variable in /etc/login.defs.
+           If this variable is set to _y_e_s (or --UU//----uusseerr--ggrroouupp is specified on the command line), a group will be
+           created for the user, with the same name as her loginname. If the variable is set to _n_o (or
+           --NN//----nnoo--uusseerr--ggrroouupp is specified on the command line), useradd will set the primary group of the new user to
+           the value specified by the GGRROOUUPP variable in /etc/default/useradd, or 100 by default.
+
+       --GG, ----ggrroouuppss _G_R_O_U_P_1[_,_G_R_O_U_P_2_,_._._.[_,_G_R_O_U_P_N]]]
+           A list of supplementary groups which the user is also a member of. Each group is separated from the next by
+           a comma, with no intervening whitespace. The groups are subject to the same restrictions as the group given
+           with the --gg option. The default is for the user to belong only to the initial group.
+
+       --hh, ----hheellpp
+           Display help message and exit.
+
+       --kk, ----sskkeell _S_K_E_L___D_I_R
+           The skeleton directory, which contains files and directories to be copied in the user's home directory,
+           when the home directory is created by uusseerraadddd.
+
+           This option is only valid if the --mm (or ----ccrreeaattee--hhoommee) option is specified.
+
+           If this option is not set, the skeleton directory is defined by the SSKKEELL variable in /etc/default/useradd
+           or, by default, /etc/skel.
+
+           If possible, the ACLs and extended attributes are copied.
+
+       --KK, ----kkeeyy _K_E_Y=_V_A_L_U_E
+           Overrides /etc/login.defs defaults (UUIIDD__MMIINN, UUIIDD__MMAAXX, UUMMAASSKK, PPAASSSS__MMAAXX__DDAAYYSS and others).
+
+           Example: --KK _P_A_S_S___M_A_X___D_A_Y_S=_-_1 can be used when creating system account to turn off password aging, even
+           though system account has no password at all. Multiple --KK options can be specified, e.g.: --KK _U_I_D___M_I_N=_1_0_0
+           --KK _U_I_D___M_A_X=_4_9_9
+
+       --ll, ----nnoo--lloogg--iinniitt
+           Do not add the user to the lastlog and faillog databases.
+
+           By default, the user's entries in the lastlog and faillog databases are reset to avoid reusing the entry
+           from a previously deleted user.
+
+           For the compatibility with previous Debian's uusseerraadddd, the --OO option is also supported.
+
+       --mm, ----ccrreeaattee--hhoommee
+           Create the user's home directory if it does not exist. The files and directories contained in the skeleton
+           directory (which can be defined with the --kk option) will be copied to the home directory.
+
+           By default, if this option is not specified and CCRREEAATTEE__HHOOMMEE is not enabled, no home directories are
+           created.
+
+       --MM, ----nnoo--ccrreeaattee--hhoommee
+           Do no create the user's home directory, even if the system wide setting from /etc/login.defs (CCRREEAATTEE__HHOOMMEE)
+           is set to _y_e_s.
+
+       --NN, ----nnoo--uusseerr--ggrroouupp
+           Do not create a group with the same name as the user, but add the user to the group specified by the --gg
+           option or by the GGRROOUUPP variable in /etc/default/useradd.
+
+           The default behavior (if the --gg, --NN, and --UU options are not specified) is defined by the UUSSEERRGGRROOUUPPSS__EENNAABB
+           variable in /etc/login.defs.
+
+       --oo, ----nnoonn--uunniiqquuee
+           Allow the creation of a user account with a duplicate (non-unique) UID.
+
+           This option is only valid in combination with the --uu option.
+
+       --pp, ----ppaasssswwoorrdd _P_A_S_S_W_O_R_D
+           The encrypted password, as returned by ccrryypptt(3). The default is to disable the password.
+
+           NNoottee:: This option is not recommended because the password (or encrypted password) will be visible by users
+           listing the processes.
+
+           You should make sure the password respects the system's password policy.
+
+       --rr, ----ssyysstteemm
+           Create a system account.
+
+           System users will be created with no aging information in /etc/shadow, and their numeric identifiers are
+           chosen in the SSYYSS__UUIIDD__MMIINN-SSYYSS__UUIIDD__MMAAXX range, defined in /etc/login.defs, instead of UUIIDD__MMIINN-UUIIDD__MMAAXX (and
+           their GGIIDD counterparts for the creation of groups).
+
+           Note that uusseerraadddd will not create a home directory for such a user, regardless of the default setting in
+           /etc/login.defs (CCRREEAATTEE__HHOOMMEE). You have to specify the --mm options if you want a home directory for a system
+           account to be created.
+
+       --RR, ----rroooott _C_H_R_O_O_T___D_I_R
+           Apply changes in the _C_H_R_O_O_T___D_I_R directory and use the configuration files from the _C_H_R_O_O_T___D_I_R directory.
+
+       --PP, ----pprreeffiixx _P_R_E_F_I_X___D_I_R
+           Apply changes in the _P_R_E_F_I_X___D_I_R directory and use the configuration files from the _P_R_E_F_I_X___D_I_R directory.
+           This option does not chroot and is intended for preparing a cross-compilation target. Some limitations: NIS
+           and LDAP users/groups are not verified. PAM authentication is using the host files. No SELINUX support.
+
+       --ss, ----sshheellll _S_H_E_L_L
+           The name of the user's login shell. The default is to leave this field blank, which causes the system to
+           select the default login shell specified by the SSHHEELLLL variable in /etc/default/useradd, or an empty string
+           by default.
+
+       --uu, ----uuiidd _U_I_D
+           The numerical value of the user's ID. This value must be unique, unless the --oo option is used. The value
+           must be non-negative. The default is to use the smallest ID value greater than or equal to UUIIDD__MMIINN and
+           greater than every other user.
+
+           See also the --rr option and the UUIIDD__MMAAXX description.
+
+       --UU, ----uusseerr--ggrroouupp
+           Create a group with the same name as the user, and add the user to this group.
+
+           The default behavior (if the --gg, --NN, and --UU options are not specified) is defined by the UUSSEERRGGRROOUUPPSS__EENNAABB
+           variable in /etc/login.defs.
+
+       --ZZ, ----sseelliinnuuxx--uusseerr _S_E_U_S_E_R
+           The SELinux user for the user's login. The default is to leave this field blank, which causes the system to
+           select the default SELinux user.
+
+   CChhaannggiinngg tthhee ddeeffaauulltt vvaalluueess
+       When invoked with only the --DD option, uusseerraadddd will display the current default values. When invoked with --DD
+       plus other options, uusseerraadddd will update the default values for the specified options. Valid default-changing
+       options are:
+
+       --bb, ----bbaassee--ddiirr _B_A_S_E___D_I_R
+           The path prefix for a new user's home directory. The user's name will be affixed to the end of _B_A_S_E___D_I_R to
+           form the new user's home directory name, if the --dd option is not used when creating a new account.
+
+           This option sets the HHOOMMEE variable in /etc/default/useradd.
+
+       --ee, ----eexxppiirreeddaattee _E_X_P_I_R_E___D_A_T_E
+           The date on which the user account is disabled.
+
+           This option sets the EEXXPPIIRREE variable in /etc/default/useradd.
+
+       --ff, ----iinnaaccttiivvee _I_N_A_C_T_I_V_E
+           The number of days after a password has expired before the account will be disabled.
+
+           This option sets the IINNAACCTTIIVVEE variable in /etc/default/useradd.
+
+       --gg, ----ggiidd _G_R_O_U_P
+           The group name or ID for a new user's initial group (when the --NN//----nnoo--uusseerr--ggrroouupp is used or when the
+           UUSSEERRGGRROOUUPPSS__EENNAABB variable is set to _n_o in /etc/login.defs). The named group must exist, and a numerical
+           group ID must have an existing entry.
+
+           This option sets the GGRROOUUPP variable in /etc/default/useradd.
+
+       --ss, ----sshheellll _S_H_E_L_L
+           The name of a new user's login shell.
+
+           This option sets the SSHHEELLLL variable in /etc/default/useradd.
+
+NNOOTTEESS
+       The system administrator is responsible for placing the default user files in the /etc/skel/ directory (or any
+       other skeleton directory specified in /etc/default/useradd or on the command line).
+
+CCAAVVEEAATTSS
+       You may not add a user to a NIS or LDAP group. This must be performed on the corresponding server.
+
+       Similarly, if the username already exists in an external user database such as NIS or LDAP, uusseerraadddd will deny
+       the user account creation request.
+
+       It is usually recommended to only use usernames that begin with a lower case letter or an underscore, followed
+       by lower case letters, digits, underscores, or dashes. They can end with a dollar sign. In regular expression
+       terms: [a-z_][a-z0-9_-]*[$]?
+
+       On Debian, the only constraints are that usernames must neither start with a dash ('-') nor plus ('+') nor
+       tilde ('~') nor contain a colon (':'), a comma (','), or a whitespace (space: ' ', end of line: '\n',
+       tabulation: '\t', etc.). Note that using a slash ('/') may break the default algorithm for the definition of
+       the user's home directory.
+
+       On Ubuntu, the same constraints as Debian are in place, with the additional constraint that the username cannot
+       be fully numeric. This includes octal and hexadecimal syntax.
+
+       Usernames may only be up to 32 characters long.
+
+CCOONNFFIIGGUURRAATTIIOONN
+       The following configuration variables in /etc/login.defs change the behavior of this tool:
+
+       CCRREEAATTEE__HHOOMMEE (boolean)
+           Indicate if a home directory should be created by default for new users.
+
+           This setting does not apply to system users, and can be overridden on the command line.
+
+       GGIIDD__MMAAXX (number), GGIIDD__MMIINN (number)
+           Range of group IDs used for the creation of regular groups by uusseerraadddd, ggrroouuppaadddd, or nneewwuusseerrss.
+
+           The default value for GGIIDD__MMIINN (resp.  GGIIDD__MMAAXX) is 1000 (resp. 60000).
+
+       HHOOMMEE__MMOODDEE (number)
+           The mode for new home directories. If not specified, the UUMMAASSKK is used to create the mode.
+
+           uusseerraadddd and nneewwuusseerrss use this to set the mode of the home directory they create.
+
+       LLAASSTTLLOOGG__UUIIDD__MMAAXX (number)
+           Highest user ID number for which the lastlog entries should be updated. As higher user IDs are usually
+           tracked by remote user identity and authentication services there is no need to create a huge sparse
+           lastlog file for them.
+
+           No LLAASSTTLLOOGG__UUIIDD__MMAAXX option present in the configuration means that there is no user ID limit for writing
+           lastlog entries.
+
+       MMAAIILL__DDIIRR (string)
+           The mail spool directory. This is needed to manipulate the mailbox when its corresponding user account is
+           modified or deleted. If not specified, a compile-time default is used.
+
+       MMAAIILL__FFIILLEE (string)
+           Defines the location of the users mail spool files relatively to their home directory.
+
+       The MMAAIILL__DDIIRR and MMAAIILL__FFIILLEE variables are used by uusseerraadddd, uusseerrmmoodd, and uusseerrddeell to create, move, or delete the
+       user's mail spool.
+
+       MMAAXX__MMEEMMBBEERRSS__PPEERR__GGRROOUUPP (number)
+           Maximum members per group entry. When the maximum is reached, a new group entry (line) is started in
+           /etc/group (with the same name, same password, and same GID).
+
+           The default value is 0, meaning that there are no limits in the number of members in a group.
+
+           This feature (split group) permits to limit the length of lines in the group file. This is useful to make
+           sure that lines for NIS groups are not larger than 1024 characters.
+
+           If you need to enforce such limit, you can use 25.
+
+           Note: split groups may not be supported by all tools (even in the Shadow toolsuite). You should not use
+           this variable unless you really need it.
+
+       PPAASSSS__MMAAXX__DDAAYYSS (number)
+           The maximum number of days a password may be used. If the password is older than this, a password change
+           will be forced. If not specified, -1 will be assumed (which disables the restriction).
+
+       PPAASSSS__MMIINN__DDAAYYSS (number)
+           The minimum number of days allowed between password changes. Any password changes attempted sooner than
+           this will be rejected. If not specified, -1 will be assumed (which disables the restriction).
+
+       PPAASSSS__WWAARRNN__AAGGEE (number)
+           The number of days warning given before a password expires. A zero means warning is given only upon the day
+           of expiration, a negative value means no warning is given. If not specified, no warning will be provided.
+
+       SSUUBB__GGIIDD__MMIINN (number), SSUUBB__GGIIDD__MMAAXX (number), SSUUBB__GGIIDD__CCOOUUNNTT (number)
+           If /etc/subuid exists, the commands uusseerraadddd and nneewwuusseerrss (unless the user already have subordinate group
+           IDs) allocate SSUUBB__GGIIDD__CCOOUUNNTT unused group IDs from the range SSUUBB__GGIIDD__MMIINN to SSUUBB__GGIIDD__MMAAXX for each new user.
+
+           The default values for SSUUBB__GGIIDD__MMIINN, SSUUBB__GGIIDD__MMAAXX, SSUUBB__GGIIDD__CCOOUUNNTT are respectively 100000, 600100000 and
+           65536.
+
+       SSUUBB__UUIIDD__MMIINN (number), SSUUBB__UUIIDD__MMAAXX (number), SSUUBB__UUIIDD__CCOOUUNNTT (number)
+           If /etc/subuid exists, the commands uusseerraadddd and nneewwuusseerrss (unless the user already have subordinate user
+           IDs) allocate SSUUBB__UUIIDD__CCOOUUNNTT unused user IDs from the range SSUUBB__UUIIDD__MMIINN to SSUUBB__UUIIDD__MMAAXX for each new user.
+
+           The default values for SSUUBB__UUIIDD__MMIINN, SSUUBB__UUIIDD__MMAAXX, SSUUBB__UUIIDD__CCOOUUNNTT are respectively 100000, 600100000 and
+           65536.
+
+       SSYYSS__GGIIDD__MMAAXX (number), SSYYSS__GGIIDD__MMIINN (number)
+           Range of group IDs used for the creation of system groups by uusseerraadddd, ggrroouuppaadddd, or nneewwuusseerrss.
+
+           The default value for SSYYSS__GGIIDD__MMIINN (resp.  SSYYSS__GGIIDD__MMAAXX) is 101 (resp.  GGIIDD__MMIINN-1).
+
+       SSYYSS__UUIIDD__MMAAXX (number), SSYYSS__UUIIDD__MMIINN (number)
+           Range of user IDs used for the creation of system users by uusseerraadddd or nneewwuusseerrss.
+
+           The default value for SSYYSS__UUIIDD__MMIINN (resp.  SSYYSS__UUIIDD__MMAAXX) is 101 (resp.  UUIIDD__MMIINN-1).
+
+       UUIIDD__MMAAXX (number), UUIIDD__MMIINN (number)
+           Range of user IDs used for the creation of regular users by uusseerraadddd or nneewwuusseerrss.
+
+           The default value for UUIIDD__MMIINN (resp.  UUIIDD__MMAAXX) is 1000 (resp. 60000).
+
+       UUMMAASSKK (number)
+           The file mode creation mask is initialized to this value. If not specified, the mask will be initialized to
+           022.
+
+           uusseerraadddd and nneewwuusseerrss use this mask to set the mode of the home directory they create if HHOOMMEE__MMOODDEE is not
+           set.
+
+           It is also used by ppaamm__uummaasskk as the default umask value.
+
+       UUSSEERRGGRROOUUPPSS__EENNAABB (boolean)
+           If set to _y_e_s, uusseerrddeell will remove the user's group if it contains no more members, and uusseerraadddd will create
+           by default a group with the name of the user.
+
+FFIILLEESS
+       /etc/passwd
+           User account information.
+
+       /etc/shadow
+           Secure user account information.
+
+       /etc/group
+           Group account information.
+
+       /etc/gshadow
+           Secure group account information.
+
+       /etc/default/useradd
+           Default values for account creation.
+
+       /etc/skel/
+           Directory containing default files.
+
+       /etc/subgid
+           Per user subordinate group IDs.
+
+       /etc/subuid
+           Per user subordinate user IDs.
+
+       /etc/login.defs
+           Shadow password suite configuration.
+
+EEXXIITT VVAALLUUEESS
+       The uusseerraadddd command exits with the following values:
+
+       _0
+           success
+
+       _1
+           can't update password file
+
+       _2
+           invalid command syntax
+
+       _3
+           invalid argument to option
+
+       _4
+           UID already in use (and no --oo)
+
+       _6
+           specified group doesn't exist
+
+       _9
+           username already in use
+
+       _1_0
+           can't update group file
+
+       _1_2
+           can't create home directory
+
+       _1_4
+           can't update SELinux user mapping
+
+SSEEEE AALLSSOO
+       cchhffnn(1), cchhsshh(1), ppaasssswwdd(1), ccrryypptt(3), ggrroouuppaadddd(8), ggrroouuppddeell(8), ggrroouuppmmoodd(8), llooggiinn..ddeeffss(5), nneewwuusseerrss(8),
+       ssuubbggiidd(5), ssuubbuuiidd(5), uusseerrddeell(8), uusseerrmmoodd(8).
+
+shadow-utils 4.8.1                                    03/14/2022                                            USERADD(8)

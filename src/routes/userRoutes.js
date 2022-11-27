@@ -60,6 +60,17 @@ userRouter.get("/details", userAuth, async (req, res) => {
   }
 });
 
+userRouter.get("/login", userAuth, async (req, res) => {
+  try {
+    if(!req.user)
+      return res.status(403).json({ success: false, error: "Access Denied" });
+
+    return res.status(200).json({ success: true, loggedIn: "yes" });
+  } catch (error) {
+    return res.status(500).json({ success: false, error });
+  }
+});
+
 userRouter.get("/loans", userAuth, async (req, res) => {
   try {
     if (!req.user)
