@@ -7,9 +7,9 @@ CREATE TABLE `customers` (
     `acc_num` INTEGER NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `phone_num` VARCHAR(191) NOT NULL,
-    `address` VARCHAR(191) NOT NULL,
-    `gender` VARCHAR(1) NOT NULL,
-    `dob` DATE NOT NULL,
+    `address` VARCHAR(191) NULL,
+    `gender` VARCHAR(1) NULL,
+    `dob` DATE NULL,
 
     UNIQUE INDEX `customers_email_key`(`email`),
     UNIQUE INDEX `customers_acc_num_key`(`acc_num`),
@@ -50,6 +50,7 @@ CREATE TABLE `loan_types` (
     `amount` INTEGER NOT NULL,
     `interest` DECIMAL(65, 30) NOT NULL,
 
+    UNIQUE INDEX `loan_types_loan_name_key`(`loan_name`),
     PRIMARY KEY (`loan_type_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 

@@ -97,7 +97,7 @@ userRouter.post("", signupValidator, async (req, res) => {
 
   try {
     // extract user details
-    const { fname, lname, email, password, phone_num, address, gender, dob } =
+    const { fname, lname, email, password, phone_num } =
       req.body;
 
     // check if user exists
@@ -128,9 +128,6 @@ userRouter.post("", signupValidator, async (req, res) => {
         password: hashedPassword,
         acc_num,
         phone_num,
-        address,
-        gender,
-        dob,
       },
     });
 
@@ -150,13 +147,11 @@ userRouter.post("", signupValidator, async (req, res) => {
           email,
           acc_num: customer.acc_num,
           phone_num,
-          address,
-          gender,
-          dob,
         },
       },
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({ error });
   }
 });

@@ -36,6 +36,7 @@ module.exports.signupValidator = checkSchema({
   },
   address: {
     trim: true,
+    optional: true,
   },
   gender: {
     trim: true,
@@ -43,9 +44,11 @@ module.exports.signupValidator = checkSchema({
       errorMessage: "Gender must be a single character(M or F)",
       options: { max: 1, min: 1 },
     },
+    optional: true,
   },
   dob: {
     trim: true,
+    optional: true,
     isISO8601: true,
     toDate: true,
     errorMessage: "Please enter a correctly formatted date",

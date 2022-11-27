@@ -11,16 +11,16 @@ datasource db {
 }
 
 model Customer {
-  id        Int      @id @default(autoincrement()) @map("customer_id")
-  fname     String   @db.VarChar(25)
-  lname     String   @db.VarChar(25)
-  email     String   @unique
-  acc_num   Int      @unique
+  id        Int       @id @default(autoincrement()) @map("customer_id")
+  fname     String    @db.VarChar(25)
+  lname     String    @db.VarChar(25)
+  email     String    @unique
+  acc_num   Int       @unique
   password  String
   phone_num String
-  address   String
-  gender    String   @db.VarChar(1)
-  dob       DateTime @db.Date()
+  address   String?
+  gender    String?   @db.VarChar(1)
+  dob       DateTime? @db.Date()
   loans     Loan[]
 
   @@map("customers")
