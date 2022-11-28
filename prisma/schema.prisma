@@ -22,6 +22,7 @@ model Customer {
   gender    String?   @db.VarChar(1)
   dob       DateTime? @db.Date()
   loans     Loan[]
+  Account   Account?
 
   @@map("customers")
 }
@@ -31,7 +32,7 @@ model Loan {
   desc       String   @db.VarChar(255)
   collateral String
   customer   Customer @relation(fields: [customerId], references: [id])
-  customerId Int
+  customerId Int      @map("customer_id")
   type       LoanType @relation(fields: [loanTypeId], references: [id])
   loanTypeId Int      @map("loan_type_id")
   startDate  DateTime @map("start_date") @db.Date
@@ -60,4 +61,14 @@ model LoanType {
   loans    Loan[]
 
   @@map("loan_types")
+}
+
+model Account {
+  id         Int      @id @default(autoincrement()) @map("account_id")
+  balance    Int      @default(0) @map("amount")
+  createdAt  DateTime @default(now()) @map("date_opened")
+  customerId Int      @unique @map("customer_id")
+  user       Customer @relation(fields: [customerId], references: [id])
+
+  @@map("accounts")
 }
