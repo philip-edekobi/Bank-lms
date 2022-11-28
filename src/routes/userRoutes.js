@@ -50,7 +50,14 @@ userRouter.get("/details", userAuth, async (req, res) => {
       where: {
         id: parseInt(req.user.id, 10),
       },
-      select: greenData,
+      select: {
+        ...greenData,
+        Account: {
+          select: {
+            balance: true,
+          },
+        },
+      },
     });
 
     return res.status(200).json({ success: true, data: { user } });
@@ -62,7 +69,7 @@ userRouter.get("/details", userAuth, async (req, res) => {
 
 userRouter.get("/login", userAuth, async (req, res) => {
   try {
-    if(!req.user)
+    if (!req.user)
       return res.status(403).json({ success: false, error: "Access Denied" });
 
     return res.status(200).json({ success: true, loggedIn: "yes" });
@@ -97,8 +104,7 @@ userRouter.post("", signupValidator, async (req, res) => {
 
   try {
     // extract user details
-    const { fname, lname, email, password, phone_num } =
-      req.body;
+    const { fname, lname, email, password, phone_num } = req.body;
 
     // check if user exists
     const existingUser = await prisma.customer.findUnique({
