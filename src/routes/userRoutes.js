@@ -219,12 +219,42 @@ userRouter.post("/pay", userAuth, async (req, res) => {
     if (!req.user)
       return res.status(403).json({ success: false, error: "Access Denied" });
 
-    let loan = await prisma.loan.findFirst({
+    const loan = await prisma.loan.findFirst({
       where: {
         customerId: parseInt(req.user.id, 10),
         isSettled: false,
       },
+      include: {
+        type: {
+          select: {
+            amount: true,
+          },
+        },
+      },
     });
+
+    if (!loan)
+      return res
+        .status(404)
+        .json({ success: false, error: "you do not owe any loans" });
+
+    const user = await prisma.customer.findUnique({
+      where: {
+        id: parseInt(req.user.id, 10),
+      },
+      include: {
+        account: {
+          select: {
+            balance: true,
+          },
+        },
+      },
+    });
+
+    if (user.account.balance < loan.type.amount)
+      return res
+        .status(400)
+        .json({ success: false, error: "insufficient funds to repay" });
 
     const updatedLoan = await prisma.loan.update({
       where: {
@@ -235,7 +265,24 @@ userRouter.post("/pay", userAuth, async (req, res) => {
       },
     });
 
-    return res.status(200).json({ success: true, data: { loan: updatedLoan } });
+    const updatedUser = await prisma.customer.update({
+      where: {
+        id: parseInt(req.user.id, 10),
+      },
+      data: {
+        account: {
+          update: {
+            balance: {
+              decrement: loan.type.amount,
+            },
+          },
+        },
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, data: { loan: updatedLoan, user: updatedUser } });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ success: false, error });
@@ -243,6 +290,7 @@ userRouter.post("/pay", userAuth, async (req, res) => {
 });
 
 userRouter.post("/deposit", userAuth, async (req, res) => {
+  1001;
   if (!req.user)
     return res.status(403).json({ success: false, error: "Access Denied" });
 
