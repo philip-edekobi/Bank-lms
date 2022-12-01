@@ -21,7 +21,7 @@ CREATE TABLE `loans` (
     `loan_id` INTEGER NOT NULL AUTO_INCREMENT,
     `desc` VARCHAR(255) NOT NULL,
     `collateral` VARCHAR(191) NOT NULL,
-    `customerId` INTEGER NOT NULL,
+    `customer_id` INTEGER NOT NULL,
     `loan_type_id` INTEGER NOT NULL,
     `start_date` DATE NOT NULL,
     `due_date` DATE NOT NULL,
@@ -54,8 +54,22 @@ CREATE TABLE `loan_types` (
     PRIMARY KEY (`loan_type_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `accounts` (
+    `account_id` INTEGER NOT NULL AUTO_INCREMENT,
+    `amount` INTEGER NOT NULL DEFAULT 0,
+    `user_acc_num` INTEGER NOT NULL,
+    `date_opened` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+    UNIQUE INDEX `accounts_user_acc_num_key`(`user_acc_num`),
+    PRIMARY KEY (`account_id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- AddForeignKey
-ALTER TABLE `loans` ADD CONSTRAINT `loans_customerId_fkey` FOREIGN KEY (`customerId`) REFERENCES `customers`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `loans` ADD CONSTRAINT `loans_customer_id_fkey` FOREIGN KEY (`customer_id`) REFERENCES `customers`(`customer_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `loans` ADD CONSTRAINT `loans_loan_type_id_fkey` FOREIGN KEY (`loan_type_id`) REFERENCES `loan_types`(`loan_type_id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `accounts` ADD CONSTRAINT `accounts_user_acc_num_fkey` FOREIGN KEY (`user_acc_num`) REFERENCES `customers`(`acc_num`) ON DELETE RESTRICT ON UPDATE CASCADE;

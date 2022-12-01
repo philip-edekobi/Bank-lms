@@ -22,7 +22,7 @@ model Customer {
   gender    String?   @db.VarChar(1)
   dob       DateTime? @db.Date()
   loans     Loan[]
-  Account   Account?
+  account   Account?
 
   @@map("customers")
 }
@@ -64,11 +64,11 @@ model LoanType {
 }
 
 model Account {
-  id         Int      @id @default(autoincrement()) @map("account_id")
-  balance    Int      @default(0) @map("amount")
-  createdAt  DateTime @default(now()) @map("date_opened")
-  customerId Int      @unique @map("customer_id")
-  user       Customer @relation(fields: [customerId], references: [id])
+  id        Int      @id @default(autoincrement()) @map("account_id")
+  balance   Int      @default(0) @map("amount")
+  number    Int      @unique @default(dbgenerated()) @map("user_acc_num")
+  createdAt DateTime @default(now()) @map("date_opened")
+  user      Customer @relation(fields: [number], references: [acc_num])
 
   @@map("accounts")
 }

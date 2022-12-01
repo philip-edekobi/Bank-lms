@@ -26,6 +26,11 @@ const greenData = {
   address: true,
   gender: true,
   dob: true,
+  account: {
+    select: {
+      balance: true,
+    },
+  },
 }; // allowed fields for the user from the database
 
 let userRouter = Router();
@@ -52,11 +57,6 @@ userRouter.get("/details", userAuth, async (req, res) => {
       },
       select: {
         ...greenData,
-        Account: {
-          select: {
-            balance: true,
-          },
-        },
       },
     });
 
@@ -134,6 +134,10 @@ userRouter.post("", signupValidator, async (req, res) => {
         password: hashedPassword,
         acc_num,
         phone_num,
+
+        account: {
+          create: {},
+        },
       },
     });
 
@@ -232,6 +236,37 @@ userRouter.post("/pay", userAuth, async (req, res) => {
     });
 
     return res.status(200).json({ success: true, data: { loan: updatedLoan } });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, error });
+  }
+});
+
+userRouter.post("/deposit", userAuth, async (req, res) => {
+  if (!req.user)
+    return res.status(403).json({ success: false, error: "Access Denied" });
+
+  try {
+    const newBalance = parseInt(req.body.deposit, 10);
+
+    const updatedUser = await prisma.customer.update({
+      where: {
+        id: parseInt(req.user.id, 10),
+      },
+      data: {
+        account: {
+          update: {
+            balance: {
+              increment: newBalance,
+            },
+          },
+        },
+      },
+    });
+
+    return res
+      .status(200)
+      .json({ success: true, data: { user: { updatedUser } } });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ success: false, error });
