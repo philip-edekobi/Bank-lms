@@ -53,7 +53,7 @@ loanRouter.get("", async (_, res) => {
   }
 });
 
-loanRouter.post("", /*limiter,*/ userAuth, loanValidator, async (req, res) => {
+loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
