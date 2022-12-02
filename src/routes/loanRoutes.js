@@ -105,6 +105,21 @@ loanRouter.get("/types", async (_, res) => {
   }
 });
 
+loanRouter.get("/types/:id", async (req, res) => {
+  try {
+    const loan = await prisma.loanType.findUnique({
+      where: {
+        id: parseInt(req.params.id, 10),
+      },
+    });
+
+    return res.status(200).json({ success: true, data: { loan } });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ success: false, error });
+  }
+});
+
 loanRouter.post("/type", adminAuth, loanTypeValidator, async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
