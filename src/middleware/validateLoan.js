@@ -18,13 +18,6 @@ module.exports.loanValidator = checkSchema({
     isNumeric: true,
     errorMessage: "Enter a correct loan type id for this loan",
   },
-  startDate: {
-    in: "body",
-    trim: true,
-    isISO8601: true,
-    toDate: true,
-    errorMessage: "Please enter a properly formatted date",
-  },
   dueDate: {
     in: "body",
     trim: true,

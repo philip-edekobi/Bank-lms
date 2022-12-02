@@ -63,7 +63,7 @@ loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
     return res.status(403).json({ success: false, error: "Access Denied" });
 
   try {
-    const { desc, collateral, loanTypeId, startDate, dueDate } = req.body;
+    const { desc, collateral, loanTypeId, dueDate } = req.body;
 
     const existingLoan = await prisma.loan.findMany({
       where: {
@@ -83,7 +83,7 @@ loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
         collateral,
         customerId: parseInt(req.user.id, 10),
         loanTypeId,
-        startDate,
+        startDate: new Date().toJSON(),
         dueDate,
       },
     });
