@@ -262,6 +262,7 @@ userRouter.post("/pay", userAuth, async (req, res) => {
       },
       data: {
         isSettled: true,
+        repayDate: new Date(Date.now()).toJSON(),
       },
     });
 

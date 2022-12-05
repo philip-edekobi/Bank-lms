@@ -28,16 +28,17 @@ model Customer {
 }
 
 model Loan {
-  id         Int      @id @default(autoincrement()) @map("loan_id")
-  desc       String   @db.VarChar(255)
+  id         Int       @id @default(autoincrement()) @map("loan_id")
+  desc       String    @db.VarChar(255)
   collateral String
-  customer   Customer @relation(fields: [customerId], references: [id])
-  customerId Int      @map("customer_id")
-  type       LoanType @relation(fields: [loanTypeId], references: [id])
-  loanTypeId Int      @map("loan_type_id")
-  startDate  DateTime @default(now()) @map("start_date") @db.Date
-  dueDate    DateTime @map("due_date") @db.Date
-  isSettled  Boolean  @default(false)
+  customer   Customer  @relation(fields: [customerId], references: [id])
+  customerId Int       @map("customer_id")
+  type       LoanType  @relation(fields: [loanTypeId], references: [id])
+  loanTypeId Int       @map("loan_type_id")
+  startDate  DateTime  @map("start_date") @db.Date
+  dueDate    DateTime  @map("due_date") @db.Date
+  isSettled  Boolean   @default(false)
+  repayDate  DateTime? @map("repay_date") @db.Date
 
   @@map("loans")
 }
