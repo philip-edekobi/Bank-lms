@@ -83,7 +83,7 @@ loanRouter.post("", limiter, userAuth, loanValidator, async (req, res) => {
         collateral,
         customerId: parseInt(req.user.id, 10),
         loanTypeId,
-        startDate: new Date().toJSON(),
+        startDate: new Date(Date.now()).toJSON(),
         dueDate,
       },
     });
