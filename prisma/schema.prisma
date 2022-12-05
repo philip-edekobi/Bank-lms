@@ -35,7 +35,7 @@ model Loan {
   customerId Int      @map("customer_id")
   type       LoanType @relation(fields: [loanTypeId], references: [id])
   loanTypeId Int      @map("loan_type_id")
-  startDate  DateTime @map("start_date") @db.Date
+  startDate  DateTime @default(now()) @map("start_date") @db.Date
   dueDate    DateTime @map("due_date") @db.Date
   isSettled  Boolean  @default(false)
 

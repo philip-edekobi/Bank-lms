@@ -254,7 +254,7 @@ userRouter.post("/pay", userAuth, async (req, res) => {
     if (user.account.balance < loan.type.amount)
       return res
         .status(400)
-        .json({ success: false, error: "insufficient funds to repay" });
+        .json({ success: false, error: "Insufficient funds to repay" });
 
     const updatedLoan = await prisma.loan.update({
       where: {
